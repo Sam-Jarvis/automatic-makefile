@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from termcolor import colored
 from os.path import expanduser
 import argparse
 import os
@@ -32,10 +33,9 @@ def write_makefile(compiler, target):
         makefile.write('clean:\n')
         makefile.write('\trm -f $(TARGET) $(TARGET).o')
 
+
 def get_latest_file(list_of_files):
     list_length = len(list_of_files)
-    for f in list_of_files:
-    	print(f)
     a = list_of_files[0]
     i = 0
     while i < list_length:
@@ -44,54 +44,64 @@ def get_latest_file(list_of_files):
         i += 1
     return a
 
+
 def get_date_from_file(file):
     timestamp = os.path.getmtime(file)
     date = datetime.datetime.fromtimestamp(timestamp)
     return date
 
+
 def search_directory(directory):
     try:
         os.chdir(directory)
     except FileNotFoundError:
-        print('[-] incorrect path')
+        print(colored('[-]', 'red'), colored('incorrect path'))
         return
-    # At the moment is searches in subdirectories too, maybe change later?
+
+    regex = '^' + directory + '/{1}[A-Za-z0-9\s_.\-\(\):]*\.c$'
     files_in_dir = []
-    for r, d, f in os.walk(directory):
-        for file in f:
-            if re.search('.*(.c)$', file):
-                files_in_dir.append(os.path.join(r, file))
+    for root, directories, files in os.walk(directory):
+        for file in files:
+            full_path = os.path.join(root, file)
+            if re.search(regex, full_path):
+                files_in_dir.append(full_path)
     if len(files_in_dir) < 1:
-        print('[-] no C files found in working directory')
+        print(colored('[-]', 'yellow'), colored('no C files found in working directory'))
         return -1
     return files_in_dir
+
+# ^/home/samjarvis/git/automatic-makefile/{1}[A-Za-z0-9\s_.\-\(\):]*$
+# ^(.*)(\.c)$
 
 
 def get_target_name(path):
     sl = path.split('/') # Change for linux
     name = ''
     for fragment in sl:
-        if re.search('.*.c$', fragment):
-            f_name, ext = fragment.split('.')
-            name = f_name
+        f_name, ext = fragment.split('.')
+        name = f_name
     return name
+
 
 def save_default_compiler(default_compiler):
     hm_dir = get_home_dir()
-    with open('{}/.default_compiler.bin'.format(hm_dir), 'wb') as dc:
-        default_compiler = default_compiler.encode()
+    with open('{}/.default_compiler.txt'.format(hm_dir), 'w') as dc:
+        default_compiler = default_compiler
+        print(colored('[+]', 'green'), colored('default compiler set: {}'.format(default_compiler)))
         dc.write(default_compiler)
+
 
 def read_default_compiler():
     hd = get_home_dir()
     default_compiler = 'gcc'
     try:
-        with open('{}/.default_compiler.bin'.format(hd), 'rb') as dc:
+        with open('{}/.default_compiler.txt'.format(hd), 'r') as dc:
             default_compiler = dc.read()
-            default_compiler = default_compiler.decode()
+            default_compiler = default_compiler
     except FileNotFoundError:
-        print('[-] default compiler config not found')
+        print(colored('[-]', 'yellow'), colored('default compiler config not found'))
     return default_compiler
+
 
 def get_home_dir():
     hm_dir = expanduser('~')
@@ -100,11 +110,10 @@ def get_home_dir():
 
 # OS
 wrk_dir = os.getcwd()
-print('working dir: ', wrk_dir)
 hm_dir = get_home_dir()
-print('home dir: ', hm_dir)
 
 compiler = read_default_compiler()
+save_default_compiler(compiler)
 
 
 if args.file_path:
@@ -113,8 +122,6 @@ if args.file_path:
 if args.default_compiler:
     compiler = args.default_compiler
     save_default_compiler(compiler)
-    print('[+] default compiler set: {}'.format(compiler))
-
 
 if args.compiler:
     compiler = args.compiler
@@ -126,20 +133,24 @@ found_files = search_directory(wrk_dir)
 
 def main():
     if found_files == -1:
-        print('[+] generating makefile in home directory')
+        print(colored('[+]', 'green'), colored('generating generic makefile'))
         write_makefile(compiler, 'helloworld')
     elif found_files is None:
-        print('exiting.')
+        print(colored('[*]', 'red'), colored('exiting.'))
         return
     else:
         if len(found_files) == 1:
             target_name = get_target_name(found_files[0])
+            print('target name1: ', target_name)
             write_makefile(compiler, target_name)
         else:
             latest_file = get_latest_file(found_files)
             target_name = get_target_name(latest_file)
-            print('[+] generating makefile')
+            print('target name2: ', target_name)
+
+            print(colored('[+]', 'green'), colored('generating makefile'))
             write_makefile(compiler, target_name)
-            print('done.')
+            print(colored('[*]', 'green'), colored('done.'))
+
 
 main()
