@@ -75,11 +75,11 @@ def search_directory(directory):
 
 
 def get_target_name(path):
-    sl = path.split('/') # Change for linux
-    name = ''
+    sl = path.split('/')
     for fragment in sl:
-        f_name, ext = fragment.split('.')
-        name = f_name
+        if re.search('^.*\.c$', fragment):
+            f_name, ext = fragment.split('.')
+            name = f_name
     return name
 
 
@@ -113,8 +113,9 @@ wrk_dir = os.getcwd()
 hm_dir = get_home_dir()
 
 compiler = read_default_compiler()
-save_default_compiler(compiler)
 
+if wrk_dir == hm_dir:
+    wrk_dir = os.path.expanduser("~/Desktop")
 
 if args.file_path:
     wrk_dir = args.file_path
@@ -126,10 +127,8 @@ if args.default_compiler:
 if args.compiler:
     compiler = args.compiler
 
-if wrk_dir == hm_dir:
-    wrk_dir = os.path.expanduser("~/Desktop")
-
 found_files = search_directory(wrk_dir)
+
 
 def main():
     if found_files == -1:
@@ -141,14 +140,15 @@ def main():
     else:
         if len(found_files) == 1:
             target_name = get_target_name(found_files[0])
-            print('target name1: ', target_name)
+            print(colored('[+]', 'green'), colored('generating makefile for: {}'.format(target_name)))
             write_makefile(compiler, target_name)
+            print(colored('[*]', 'green'), colored('done.'))
+
         else:
             latest_file = get_latest_file(found_files)
             target_name = get_target_name(latest_file)
-            print('target name2: ', target_name)
 
-            print(colored('[+]', 'green'), colored('generating makefile'))
+            print(colored('[+]', 'green'), colored('generating makefile for: {}'.format(target_name)))
             write_makefile(compiler, target_name)
             print(colored('[*]', 'green'), colored('done.'))
 
