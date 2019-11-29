@@ -15,9 +15,9 @@ Command line arguments:
 Run the install script as sudo. _install.py_ needs admin privileges because it adds _mf.py_ to PATH so it can be called from anywhere and referred to as _mf_.
 
 Below is what the install script does. In case mf.py must be added to path manually, follow these steps:
-1 Change _mf.py_ to an executable using chmod +x
-2 Remove the _.py_ extension from _mf.py_ with _mv mf.py mf_
-3 Create a foler somewhere (in _/home_ is recommended)
-4 Move _mf_ from step 2 into the foler made in step 3
-5 Add folder to path
-6 If, when run, you get the "command not recognized" error, try restarting
+1. Change _mf.py_ to an executable using `chmod +x`
+2. Remove the _.py_ extension from _mf.py_ with `mv mf.py mf`
+3. Create a foler somewhere (in _/home_ is recommended)
+4. Move _mf_ from step 2 into the foler made in step 3
+5. Add folder to path
+6. If, when run, you get the "command not recognized" error, try restarting
