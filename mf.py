@@ -11,17 +11,16 @@ import re
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-p', dest='file_path', help='Folder path of .c file')
+parser.add_argument('-c', dest='compiler', help='Compiler to use')
+parser.add_argument('-t', dest='target', help='Target of makefile')
 parser.add_argument('-d', dest='default_compiler', help='Sets the default compiler; '
                                                         'this is persistent')
-parser.add_argument('-c', dest='compiler', help='Compiler to use')
 
 args = parser.parse_args()
 
-eg_variable = args.file_path
 
-# FUNCTION DEFINITIONS
-def write_makefile(compiler, target):
-    with open('Makefile.txt', 'w') as makefile:
+def write_makefile(path, compiler, target):
+    with open(path + '/' + 'Makefile', 'w') as makefile:
         makefile.write('CC = {}\n'.format(compiler))
         makefile.write('TARGET = {}\n'.format(target))
         makefile.write('NAME = {}\n\n'.format(target))
@@ -82,7 +81,6 @@ def get_target_name(path):
             name = f_name
     return name
 
-
 def save_default_compiler(default_compiler):
     hm_dir = get_home_dir()
     with open('{}/.default_compiler.txt'.format(hm_dir), 'w') as dc:
@@ -108,49 +106,57 @@ def get_home_dir():
     return hm_dir
 
 
-# OS
-wrk_dir = os.getcwd()
-hm_dir = get_home_dir()
-
-compiler = read_default_compiler()
-
-if wrk_dir == hm_dir:
-    wrk_dir = os.path.expanduser("~/Desktop")
-
-if args.file_path:
-    wrk_dir = args.file_path
-
-if args.default_compiler:
-    compiler = args.default_compiler
-    save_default_compiler(compiler)
-
-if args.compiler:
-    compiler = args.compiler
-
-found_files = search_directory(wrk_dir)
-
-
 def main():
-    if found_files == -1:
-        print(colored('[+]', 'green'), colored('generating generic makefile'))
-        write_makefile(compiler, 'helloworld')
-    elif found_files is None:
-        print(colored('[*]', 'red'), colored('exiting.'))
-        return
+    wrk_dir = os.getcwd()
+    hm_dir = get_home_dir()
+
+    compiler = read_default_compiler()
+    # target_name = ''
+
+    if wrk_dir == hm_dir:
+        wrk_dir = os.path.expanduser("~/Desktop")
+
+    if args.file_path:
+        if re.search('.*/$', args.file_path):
+            edited_path = re.sub('/$', '', args.file_path)
+            wrk_dir = edited_path
+        else:
+            wrk_dir = args.file_path
+
+    if args.default_compiler:
+        compiler = args.default_compiler
+        save_default_compiler(compiler)
+
+    if args.compiler:
+        compiler = args.compiler
+
+    if args.target:
+        target_name = args.target
+
     else:
-        if len(found_files) == 1:
-            target_name = get_target_name(found_files[0])
-            print(colored('[+]', 'green'), colored('generating makefile for: {}'.format(target_name)))
-            write_makefile(compiler, target_name)
-            print(colored('[*]', 'green'), colored('done.'))
+        found_files = search_directory(wrk_dir)
+
+
+        if found_files == -1:
+            print(colored('[+]', 'green'), colored('generating generic makefile'))
+            target_name = 'helloworld'
+
+        elif found_files is None:
+            print(colored('[*]', 'red'), colored('exiting.'))
+            return
 
         else:
-            latest_file = get_latest_file(found_files)
-            target_name = get_target_name(latest_file)
+            if len(found_files) == 1:
+                target_name = get_target_name(found_files[0])
+                print(colored('[+]', 'green'), colored('generating makefile for: {}'.format(target_name)))
 
-            print(colored('[+]', 'green'), colored('generating makefile for: {}'.format(target_name)))
-            write_makefile(compiler, target_name)
-            print(colored('[*]', 'green'), colored('done.'))
+            else:
+                latest_file = get_latest_file(found_files)
+                target_name = get_target_name(latest_file)
+                print(colored('[+]', 'green'), colored('generating makefile for: {}'.format(target_name)))
+
+    write_makefile(wrk_dir, compiler, target_name)
+    print(colored('[*]', 'green'), colored('done.'))
 
 
 main()
