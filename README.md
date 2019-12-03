@@ -4,7 +4,7 @@
 Script that generates a makefile automatically. Intended for command line use, i.e. added to PATH. Built for linux, will not work on windows and untested on mac_OS.
 
 ## Prerequisites
---> python 3
+* python 3
 
 ## Usage:
 Calling _mf_ from terminal will generate a makefile in the working directory. The program will search for _.c_ files in the working directory and create a makefile for the last modified _.c_ file. If no _.c_ files are found, the program will generate a makefile with _helloworld_ as the target, i.e. it will generate a generic makefile. The target, compiler, path or default comiler can be specified with command line arguments.
