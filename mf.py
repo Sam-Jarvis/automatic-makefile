@@ -23,14 +23,15 @@ def write_makefile(path, compiler, target):
     with open(path + '/' + 'Makefile', 'w') as makefile:
         makefile.write('CC = {}\n'.format(compiler))
         makefile.write('TARGET = {}\n'.format(target))
-        makefile.write('NAME = {}\n\n'.format(target))
+        makefile.write('OBDIR = obj\n\n')
         makefile.write('.PHONY: clean\n\n')
-        makefile.write('$(NAME): $(TARGET).c\n')
-        makefile.write('\t$(CC) $(TARGET).c -o $(TARGET)\n\n')
-        makefile.write('$(NAME).o: $(TARGET).c\n')
-        makefile.write('\t$(CC) -c -o $(TARGET).o $(TARGET).c\n\n')
+        makefile.write('$(TARGET): $(OBDIR)/$(TARGET).o\n')
+        makefile.write('\t$(CC) -o $(TARGET) $(OBDIR)/$(TARGET).o\n\n')
+        makefile.write('$(OBDIR)/$(TARGET).o: $(TARGET).c\n')
+        makefile.write('\t@mkdir -p $(OBDIR)\n')
+        makefile.write('\t$(CC) -c -o $(OBDIR)/$(TARGET).o $(TARGET).c\n\n')
         makefile.write('clean:\n')
-        makefile.write('\trm -f $(TARGET) $(TARGET).o')
+        makefile.write('\trm -f $(TARGET) $(OBDIR)/$(TARGET).o')
 
 
 def get_latest_file(list_of_files):
