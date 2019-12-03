@@ -14,7 +14,7 @@ Command line arguments (all optional):
 * -t --> specify target for current makefile generation
 
 ## Install:
-Run the install script, _install.py_. This adds _mf.py_ to PATH so it can be called in terminal as _mf_.
+Run the install script, _install.py_ with `python3 install.py`. This adds _mf.py_ to PATH so it can be called in terminal as _mf_.
 Note: Do __not__ run _install.py_ as sudo.
 
 Below is what the install script does. In case mf.py must be added to path manually, follow these steps:
