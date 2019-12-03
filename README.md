@@ -21,10 +21,10 @@ Run the install script, _install.py_ with `python3 install.py`. This adds _mf.py
 Note: Do __not__ run _install.py_ as sudo.
 
 Below is what the install script does. In case mf.py must be added to path manually, follow these steps:
-1. Change _mf.py_ to an executable using `chmod +x`
+1. Change _mf.py_ to an executable using `chmod +x mf.py`
 2. Remove the _.py_ extension from _mf.py_ with `mv mf.py mf`
-3. Create a foler somewhere (in _/home_ is recommended)
-4. Move _mf_ from step 2 into the foler made in step 3 with `cp mf "path_to_folder"`
-5. Add folder to path with `echo 'export PATH=$PATH":$HOME/your_folder"' >> .profile`. Note: make sure to change "your_folder" the the actual folder name. 
+3. Create a foler somewhere (in _/home_ is recommended). The install script does `mkdir /mf` in _/home_.
+4. Move _mf_ from step 2 into the foler made in step 3 with `cp mf /home/mf`, in this case.
+5. Add folder to path with `echo 'export PATH=$PATH":$HOME/mf"' >> .profile`. Note: make sure to change _/mf_ to ypur folder name. 
 6. Run `source .profile` from terminal to refresh the _.profile_ file and make _mf_ usable. 
 7. Try typing `mf` into terminal. If you get a "command not found" error, try restarting.
