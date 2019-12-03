@@ -4,10 +4,10 @@ import os
 working_dir = os.getcwd()
 print('working: ', working_dir)
 
-process = subprocess.Popen(["sudo chmod +x mf.py"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+process = subprocess.Popen(["chmod +x mf.py"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                            shell=True)
 
-process2 = subprocess.Popen(["sudo mv mf.py mf"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+process2 = subprocess.Popen(["mv mf.py mf"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             shell=True)
 
 hm_dir = os.path.expanduser('~')
